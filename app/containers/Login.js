@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Image, ActivityIndicator } from 'react-native'
+import { StyleSheet, View, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 
-import { Button, Touchable } from '../components'
+import { Button } from '../components'
 
-import { createAction, NavigationActions } from '../utils'
+// import { createAction, NavigationActions } from '../utils'
 
 @connect(({ app }) => ({ ...app }))
 class Login extends Component {
@@ -12,31 +12,53 @@ class Login extends Component {
     title: 'Login',
   }
 
-  onLogin = () => {
-    this.props.dispatch(createAction('app/login')())
+  componentDidMount() {
+    console.log(this)
   }
 
-  onClose = () => {
-    this.props.dispatch(NavigationActions.back())
+  onLogin = () => {
+    if (this.props.login) {
+      return
+    }
+    // this.props.dispatch(createAction("app/login")())
+
+    const srv = () =>
+      this.props.dispatch({
+        type: 'app/login',
+        payload: {
+          key: '12',
+          value: '12',
+        },
+      })
+
+    srv().then(r => {
+      console.log(r)
+    })
   }
+
+  // onClose = () => {
+  //   this.props.dispatch(NavigationActions.back())
+  // }
 
   render() {
-    const { fetching } = this.props
+    const { fetching, login } = this.props
+
+    console.log(this.props)
     return (
       <View style={styles.container}>
         {fetching ? (
-          <ActivityIndicator />
-        ) : (
-          <Button text="Login" onPress={this.onLogin} />
-        )}
-        {!fetching && (
-          <Touchable style={styles.close} onPress={this.onClose}>
-            <Image
-              style={styles.icon}
-              source={require('../images/close.png')}
-            />
-          </Touchable>
-        )}
+          <View
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              top: '60%',
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        ) : null}
+        <Button text={login ? '已经登录' : '登录'} onPress={this.onLogin} />
       </View>
     )
   }

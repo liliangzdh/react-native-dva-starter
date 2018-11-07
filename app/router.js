@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { BackHandler, Animated, Easing } from 'react-native'
+import { BackHandler, View } from 'react-native'
 import {
   createStackNavigator,
   createBottomTabNavigator,
@@ -43,39 +43,44 @@ const MainNavigator = createStackNavigator(
 
 const AppNavigator = createStackNavigator(
   {
-    Main: { screen: MainNavigator },
+    Main: {
+      screen: MainNavigator,
+      navigationOptions: {
+        header: null,
+      },
+    },
     Login: { screen: Login },
   },
   {
-    headerMode: 'none',
+    headerMode: 'screen',
     mode: 'modal',
     navigationOptions: {
       gesturesEnabled: false,
     },
-    transitionConfig: () => ({
-      transitionSpec: {
-        duration: 300,
-        easing: Easing.out(Easing.poly(4)),
-        timing: Animated.timing,
-      },
-      screenInterpolator: sceneProps => {
-        const { layout, position, scene } = sceneProps
-        const { index } = scene
-
-        const height = layout.initHeight
-        const translateY = position.interpolate({
-          inputRange: [index - 1, index, index + 1],
-          outputRange: [height, 0, 0],
-        })
-
-        const opacity = position.interpolate({
-          inputRange: [index - 1, index - 0.99, index],
-          outputRange: [0, 1, 1],
-        })
-
-        return { opacity, transform: [{ translateY }] }
-      },
-    }),
+    // transitionConfig: () => ({
+    //   transitionSpec: {
+    //     duration: 300,
+    //     easing: Easing.out(Easing.poly(4)),
+    //     timing: Animated.timing,
+    //   },
+    //   screenInterpolator: sceneProps => {
+    //     const { layout, position, scene } = sceneProps
+    //     const { index } = scene
+    //
+    //     const height = layout.initHeight
+    //     const translateY = position.interpolate({
+    //       inputRange: [index - 1, index, index + 1],
+    //       outputRange: [height, 0, 0],
+    //     })
+    //
+    //     const opacity = position.interpolate({
+    //       inputRange: [index - 1, index - 0.99, index],
+    //       outputRange: [0, 1, 1],
+    //     })
+    //
+    //     return { opacity, transform: [{ translateY }] }
+    //   },
+    // }),
   }
 )
 
@@ -103,6 +108,7 @@ function getActiveRouteName(navigationState) {
 class Router extends PureComponent {
   componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this.backHandle)
+    console.log(this)
   }
 
   componentWillUnmount() {
@@ -123,9 +129,16 @@ class Router extends PureComponent {
 
   render() {
     const { app, dispatch, router } = this.props
-    if (app.loading) return <Loading />
 
-    return <App dispatch={dispatch} state={router} />
+    // if (app.loading) return <Loading />
+
+    return (
+      <View style={{ flex: 1 }}>
+        <App dispatch={dispatch} state={router} />
+
+        {app.loading ? <Loading /> : null}
+      </View>
+    )
   }
 }
 

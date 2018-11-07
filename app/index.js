@@ -1,6 +1,7 @@
 import React from 'react'
 import { AppRegistry } from 'react-native'
 
+import { createLogger } from 'redux-logger'
 import dva from './utils/dva'
 import Router, { routerMiddleware, routerReducer } from './router'
 import appModel from './models/app'
@@ -9,7 +10,7 @@ const app = dva({
   initialState: {},
   models: [appModel],
   extraReducers: { router: routerReducer },
-  onAction: [routerMiddleware],
+  onAction: [routerMiddleware, createLogger({ collapsed: true })],
   onError(e) {
     console.log('onError', e)
   },
